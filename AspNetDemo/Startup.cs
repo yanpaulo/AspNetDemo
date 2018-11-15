@@ -87,6 +87,8 @@ namespace AspNetDemo
                 app.UseExceptionHandler("/Error");
                 app.UseHsts();
             }
+            UpdateDatabase(app);
+
 
             app.UseHttpsRedirection();
             app.UseStaticFiles();
@@ -96,7 +98,6 @@ namespace AspNetDemo
 
             app.UseMvc();
 
-            UpdateDatabase(app);
         }
 
         private static void UpdateDatabase(IApplicationBuilder app)
