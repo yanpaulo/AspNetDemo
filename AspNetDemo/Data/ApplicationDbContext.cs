@@ -12,5 +12,7 @@ namespace AspNetDemo.Data
             : base(options)
         {
         }
+
+        public DbSet<Contato> Contatos { get; set; }
     }
 }

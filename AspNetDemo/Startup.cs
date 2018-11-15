@@ -12,6 +12,8 @@ using Microsoft.EntityFrameworkCore;
 using AspNetDemo.Data;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using AspNetDemo.Services;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 
 namespace AspNetDemo
 {
@@ -35,10 +37,38 @@ namespace AspNetDemo
             });
 
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
+                options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>()
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+                .AddEntityFrameworkStores<ApplicationDbContext>()
+                .AddDefaultUI()
+                .AddDefaultTokenProviders();
+
+            var tokenConfigurations = new TokenConfigurations();
+            services.AddSingleton(tokenConfigurations);
+
+            services.AddAuthentication(options =>
+            {
+                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            })
+            .AddJwtBearer(bearerOptions =>
+            {
+                bearerOptions.TokenValidationParameters = tokenConfigurations.TokenValidationParameters;
+            });
+
+
+            services.Configure<IdentityOptions>(opt =>
+            {
+                opt.Password = new PasswordOptions
+                {
+                    RequireDigit = false,
+                    RequiredLength = 6,
+                    RequireLowercase = false,
+                    RequireNonAlphanumeric = false,
+                    RequireUppercase = false
+                };
+            });
 
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
