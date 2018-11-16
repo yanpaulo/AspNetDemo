@@ -40,22 +40,17 @@ namespace AspNetDemo
                 options.UseSqlite(
                     Configuration.GetConnectionString("DefaultConnection")));
             services.AddDefaultIdentity<IdentityUser>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultUI()
-                .AddDefaultTokenProviders();
+                .AddEntityFrameworkStores<ApplicationDbContext>();
 
             var tokenConfigurations = new TokenConfigurations();
             services.AddSingleton(tokenConfigurations);
-
-            services.AddAuthentication(options =>
-            {
-                options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-                options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-            })
+            
+            services.AddAuthentication()
             .AddJwtBearer(bearerOptions =>
             {
                 bearerOptions.TokenValidationParameters = tokenConfigurations.TokenValidationParameters;
-            });
+            })
+            .AddCookie();
 
 
             services.Configure<IdentityOptions>(opt =>
